@@ -1,41 +1,56 @@
 <?php 
- require_once( __dir__."/services/ResponseService.php");
-// require_once( __dir__."/routes/api.php");
-//  require_once (__dir__."/controllers/AdminController.php");
-  require_once (__dir__."/controllers/AuthoController.php");
-//  require_once (__dir__."/controllers/TraineeController.php");
-//  require_once(__DIR__.'/utils/config.php');
+require_once(__DIR__ . "/services/ResponseService.php");
+require_once(__DIR__ . "/controllers/AuthoController.php");
+require_once(__DIR__ . "/controllers/ChatController.php");
+require_once(__DIR__ . "/controllers/UserController.php");
 
-$base_dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-$request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Get the request URI without query string
+$request = strtok($_SERVER['REQUEST_URI'], '?');
 
-if (strpos($request, $base_dir) === 0) {
-    $request = substr($request, strlen($base_dir));
+// Remove the base directory (/ChattingApp/server)
+// This assumes your script is at /ChattingApp/server/index.php (or similar)
+$base_path = '/ChattingApp/server';
+
+if (strpos($request, $base_path) === 0) {
+    $request = substr($request, strlen($base_path));
 }
 
-if ($request == '') {
-    $request = '/';
+// Ensure it starts with /
+if (empty($request) || $request[0] !== '/') {
+    $request = '/' . $request;
 }
+
 $apis = [
-    // Auth endpoints
-    '/auth/signup'               => ['controller' => 'AuthoController', 'method' => 'signUp'],
-    '/auth/signin'               => ['controller' => 'AuthoController', 'method' => 'signIn'],
-   
+    // AUTH ENDPOINTS
+    '/auth/signup'          => ['controller' => 'AuthoController', 'method' => 'signUp'],
+    '/auth/signin'          => ['controller' => 'AuthoController', 'method' => 'signIn'],
+
+    // USER ENDPOINTS
+    '/user/getUserInfo'     => ['controller' => 'UserController', 'method' => 'getUserInfo'],
+    '/user/update'          => ['controller' => 'UserController', 'method' => 'updateUserInfo'],
+    '/user/getAllUsers'     => ['controller' => 'UserController', 'method' => 'getAllUsers'],
+
+    // CHAT ENDPOINTS
+    '/chat/send'                   => ['controller' => 'ChatController', 'method' => 'sendMessage'],
+    '/chat/receiveNew'             => ['controller' => 'ChatController', 'method' => 'receivingNewMessages'],
+    '/chat/readMessage'            => ['controller' => 'ChatController', 'method' => 'readMessage'],
+    '/chat/getAllWithUser'         => ['controller' => 'ChatController', 'method' => 'getAllMessageWithOtherUser'],
+    '/chat/getAllForUser'          => ['controller' => 'ChatController', 'method' => 'getAllMessageForUser'],
+    '/chat/catchUpAI'              => ['controller' => 'ChatController', 'method' => 'CatchUpWithAI'],
 ];
 
 if (isset($apis[$request])) {
     $controller_name = $apis[$request]['controller']; 
     $method = $apis[$request]['method'];
-    require_once "controllers/{$controller_name}.php";
     
     $controller = new $controller_name();
     if (method_exists($controller, $method)) {
         $controller->$method();
     } else {
-        echo ResponseService::error( "Error: Method {$method} not found in {$controller_name}");
+        echo ResponseService::error("Error: Method {$method} not found in {$controller_name}");
     }
 } else {
-    echo ResponseService::error("Route Not Found");
+    // Show available routes in error for debugging
+    echo ResponseService::error("Route Not Found: {$request}. Available routes: " . implode(', ', array_keys($apis)));
 }
-
 ?>

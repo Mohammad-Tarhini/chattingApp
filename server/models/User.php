@@ -2,7 +2,7 @@
 require_once("Model.php");
 
 class User extends Model {
-    private int $id;
+    private ?int $id;
     private string $name;
     private string $password;
     private string $email;
