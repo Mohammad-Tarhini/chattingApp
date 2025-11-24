@@ -27,6 +27,8 @@ export function signup() {
         </p>
     `;
 }
+
+
 // component.js - Chat Components
 
 // ==================== CHAT LIST ====================
@@ -122,8 +124,6 @@ export function conversationComponent() {
     `;
 }
 
-    
-
 export function allMessagesComponent() {
     return `
         <div class="conversation-container">
@@ -133,7 +133,7 @@ export function allMessagesComponent() {
                 <button id="refreshAllBtn" class="btn-secondary">Refresh</button>
             </div>
             
-            <div id="allMessagesContainer" class="messages-container">
+            <div id="allMessagesContainer" class="messages-container all-messages-view">
                 <div class="loading">Loading all messages...</div>
             </div>
         </div>
@@ -185,25 +185,47 @@ export function renderMessage(msg, currentUserId) {
 }
 
 export function renderAllMessageItem(msg, currentUserId) {
+    console.log('Rendering message:', msg); // Debug log
+    
+    // Extract all possible field variations
     const senderId = msg.sender_id || msg.senderId;
     const receiverId = msg.receiver_id || msg.receiverId;
     const isSent = senderId == currentUserId;
-    const content = msg.content || '';
-    const sendAt = msg.sendAt || msg.send_at || msg.sent_at || '';
-    const status = msg.status || '';
-     const otherUserName = isSent ? (msg.receiver_name || msg.receiverName || 'Unknown') : (msg.sender_name || msg.senderName || 'Unknown');
+    
+    // Try all possible content field names
+    const content = msg.content || msg.Content || msg.message || msg.text || 'No content';
+    
+    // Try all possible timestamp field names
+    const sendAt = msg.send_at || msg.sendAt || msg.sent_at || msg.send_At || msg.created_at || '';
+    
+    // Try all possible status field names
+    const status = msg.status || msg.Status || 'sent';
+    
+    // Get user names with multiple fallback options
+    let otherUserName;
+    if (isSent) {
+        otherUserName = msg.receiverName || msg.receiver_name || msg.receiverEmail || msg.receiver_email || `User ${receiverId}`;
+    } else {
+        otherUserName = msg.senderName || msg.sender_name || msg.senderEmail || msg.sender_email || `User ${senderId}`;
+    }
+    
+    // Ensure content is not empty
+    const displayContent = content && content.trim() !== '' ? content : '(Empty message)';
     
     return `
         <div class="message-card ${isSent ? 'sent-card' : 'received-card'}">
             <div class="message-card-header">
                 <div class="message-card-user">
-                    <div class="small-avatar">${otherUserName[0].toUpperCase()}</div>
-                    <strong>${isSent ? 'To' : 'From'}: ${otherUserName}</strong>
+                    <div class="small-avatar">${otherUserName[0] ? otherUserName[0].toUpperCase() : 'U'}</div>
+                    <strong>${isSent ? 'To' : 'From'}: ${escapeHtml(otherUserName)}</strong>
                 </div>
                 <span class="status-badge status-${status}">${status}</span>
             </div>
-            <div class="message-card-body">${escapeHtml(content)}</div>
-            <div class="message-card-footer">${formatTime(sendAt)}</div>
+            <div class="message-card-body">${escapeHtml(displayContent)}</div>
+            <div class="message-card-footer">
+                <span>${formatTime(sendAt)}</span>
+                <span class="message-id">#${msg.id || ''}</span>
+            </div>
         </div>
     `;
 }
@@ -250,6 +272,10 @@ function formatTime(timestamp) {
     if (!timestamp) return '';
     
     const date = new Date(timestamp);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) return '';
+    
     const now = new Date();
     const diffMs = now - date;
     const diffMins = Math.floor(diffMs / 60000);
@@ -265,6 +291,7 @@ function formatTime(timestamp) {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
