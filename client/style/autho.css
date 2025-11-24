@@ -1,0 +1,124 @@
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+/* Container for form */
+.container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+    transition: all 0.3s ease;
+    
+}
+
+.container h1 {
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #333;
+}
+
+/* Input fields */
+.container input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.container input:focus {
+    border-color: #2575fc;
+    box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+}
+
+/* Buttons */
+.container button {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background-color: #2575fc;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.container button:hover {
+    background-color: #1a5ed8;
+}
+
+/* Small navigation buttons */
+.container p {
+    font-size: 14px;
+    color: #555;
+    
+}
+
+.container p button {
+    background: none;
+    border: none;
+    color: #2575fc;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.container p button:hover {
+    text-decoration: underline;
+}
+
+/* Page navigation buttons outside container */
+.goSignin, .goSignup {
+    position: fixed;
+    top: 20px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #fff;
+    color: #2575fc;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.goSignin:hover, .goSignup:hover {
+    background-color: #2575fc;
+    color: #fff;
+}
+
+.goSignin {
+    left: 20px;
+}
+
+.goSignup {
+    right: 20px;
+}
+
+/* Responsive */
+@media(max-width: 400px){
+    #container {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}

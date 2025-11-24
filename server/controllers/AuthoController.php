@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../services/AuthoService.php';
-require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ .'/../services/ResponseService.php';
+require_once __DIR__ .'/../utils/headers.php';
+require_once(__DIR__ .'/../connection/connection.php');
+
+
 
 
 class AuthoController{
@@ -8,6 +12,8 @@ class AuthoController{
     public function signUp() {
     
         error_reporting(E_ERROR | E_PARSE);
+        $_POST = json_decode(file_get_contents("php://input"), true);
+
         global $connection;
 
         // Validate POST data
@@ -41,6 +47,7 @@ class AuthoController{
 
     function signIn(){
         error_reporting(E_ERROR | E_PARSE);
+        $_POST = json_decode(file_get_contents("php://input"), true);
         global $connection ;
         if (!isset($_POST['email'], $_POST['password'])) {
             echo ResponseService::error("Missing email or password", 400);
